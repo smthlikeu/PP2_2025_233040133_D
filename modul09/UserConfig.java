@@ -16,13 +16,11 @@ public class UserConfig implements Serializable {
     private String username;
     private int fontSize;
     
-    // Constructor
     public UserConfig(String username, int fontSize) {
         this.username = username;
         this.fontSize = fontSize;
     }
     
-    // Getter dan Setter
     public String getUsername() {
         return username;
     }
@@ -41,9 +39,6 @@ public class UserConfig implements Serializable {
     
     @Override
     public String toString() {
-        return "UserConfig{" +
-                "username='" + username + '\'' +
-                ", fontSize=" + fontSize +
-                '}';
+        return "UserConfig{username='" + username + "', fontSize=" + fontSize + "}";
     }
 }

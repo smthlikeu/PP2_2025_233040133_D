@@ -14,30 +14,31 @@ import java.io.*;
  */
 public class AplikasiFileIO extends JFrame {
     private JTextArea textArea;
-    private JButton btnSimpan, btnBuka, btnAppend;
+    private JTextField txtUsername;
+    private JButton btnSimpanText, btnAppendText, btnBukaText;
     private JButton btnSimpanConfig, btnMuatConfig;
     private JButton btnSimpanObjek, btnMuatObjek;
     private JSpinner spinnerFontSize;
-    private JTextField txtUsername;
     
     public AplikasiFileIO() {
-        setTitle("Aplikasi File I/O ");
+        setTitle("Aplikasi File I/O - Modul 9");
         setSize(700, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         
         initComponents();
+        
+        // LATIHAN 2: Auto load last_notes.txt saat aplikasi dibuka
         autoLoadLastNotes();
-        autoLoadUserConfig();
     }
     
     private void initComponents() {
-        // Text Area dengan ScrollPane
+        // Text Area
         textArea = new JTextArea();
         textArea.setFont(new Font("Monospaced", Font.PLAIN, 14));
         JScrollPane scrollPane = new JScrollPane(textArea);
         
-        // Panel atas untuk username dan font size
+        // Panel Atas - Username dan Font Size
         JPanel panelAtas = new JPanel(new FlowLayout(FlowLayout.LEFT));
         panelAtas.add(new JLabel("Username:"));
         txtUsername = new JTextField(15);
@@ -53,26 +54,26 @@ public class AplikasiFileIO extends JFrame {
         });
         panelAtas.add(spinnerFontSize);
         
-        // Panel bawah untuk tombol File Operations
+        // Panel File Text Operations (Latihan 1 & 4)
         JPanel panelFile = new JPanel();
         panelFile.setBorder(BorderFactory.createTitledBorder("File Text Operations"));
-        btnSimpan = new JButton("Simpan Text");
-        btnAppend = new JButton("Append Text");
-        btnBuka = new JButton("Buka Text");
+        btnSimpanText = new JButton("Simpan Text");
+        btnAppendText = new JButton("Append Text");
+        btnBukaText = new JButton("Buka Text");
         
-        btnSimpan.addActionListener(e -> simpanText(false));
-        btnAppend.addActionListener(e -> simpanText(true));
-        btnBuka.addActionListener(e -> bacaText());
+        btnSimpanText.addActionListener(e -> simpanText());
+        btnAppendText.addActionListener(e -> appendText());
+        btnBukaText.addActionListener(e -> bacaText());
         
-        panelFile.add(btnSimpan);
-        panelFile.add(btnAppend);
-        panelFile.add(btnBuka);
+        panelFile.add(btnSimpanText);
+        panelFile.add(btnAppendText);
+        panelFile.add(btnBukaText);
         
-        // Panel untuk Config Operations
+        // Panel Config Binary (Latihan 1)
         JPanel panelConfig = new JPanel();
-        panelConfig.setBorder(BorderFactory.createTitledBorder("Config Operations"));
-        btnSimpanConfig = new JButton("Simpan Config (Binary)");
-        btnMuatConfig = new JButton("Muat Config (Binary)");
+        panelConfig.setBorder(BorderFactory.createTitledBorder("Config Binary"));
+        btnSimpanConfig = new JButton("Simpan Config");
+        btnMuatConfig = new JButton("Muat Config");
         
         btnSimpanConfig.addActionListener(e -> simpanConfig());
         btnMuatConfig.addActionListener(e -> muatConfig());
@@ -80,7 +81,7 @@ public class AplikasiFileIO extends JFrame {
         panelConfig.add(btnSimpanConfig);
         panelConfig.add(btnMuatConfig);
         
-        // Panel untuk Object Serialization
+        // Panel Object Serialization (Latihan 3)
         JPanel panelObjek = new JPanel();
         panelObjek.setBorder(BorderFactory.createTitledBorder("Object Serialization"));
         btnSimpanObjek = new JButton("Simpan Objek");
@@ -92,52 +93,20 @@ public class AplikasiFileIO extends JFrame {
         panelObjek.add(btnSimpanObjek);
         panelObjek.add(btnMuatObjek);
         
-        // Panel bawah gabungan
+        // Panel Bawah
         JPanel panelBawah = new JPanel(new GridLayout(3, 1, 5, 5));
         panelBawah.add(panelFile);
         panelBawah.add(panelConfig);
         panelBawah.add(panelObjek);
         
-        // Layout utama
+        // Layout Utama
         setLayout(new BorderLayout(5, 5));
         add(panelAtas, BorderLayout.NORTH);
         add(scrollPane, BorderLayout.CENTER);
         add(panelBawah, BorderLayout.SOUTH);
     }
     
-    // Latihan 1 & 4: Simpan text dengan opsi append
-    private void simpanText(boolean append) {
-        JFileChooser fileChooser = new JFileChooser();
-        int result = fileChooser.showSaveDialog(this);
-        
-        if (result == JFileChooser.APPROVE_OPTION) {
-            File file = fileChooser.getSelectedFile();
-            
-            // Latihan 4: Gunakan append parameter
-            try (BufferedWriter writer = new BufferedWriter(
-                    new FileWriter(file, append))) {
-                
-                if (append) {
-                    writer.newLine(); // Tambah baris baru sebelum append
-                }
-                writer.write(textArea.getText());
-                
-                String mode = append ? "ditambahkan ke" : "disimpan di";
-                JOptionPane.showMessageDialog(this, 
-                    "Text berhasil " + mode + " file!", 
-                    "Sukses", 
-                    JOptionPane.INFORMATION_MESSAGE);
-                    
-            } catch (IOException ex) {
-                JOptionPane.showMessageDialog(this, 
-                    "Error: " + ex.getMessage(), 
-                    "Error", 
-                    JOptionPane.ERROR_MESSAGE);
-            }
-        }
-    }
-    
-    // Latihan 1: Baca text dengan Try-Catch-Finally
+    // ========== LATIHAN 1: BACA TEXT dengan Try-Catch-Finally ==========
     private void bacaText() {
         JFileChooser fileChooser = new JFileChooser();
         int result = fileChooser.showOpenDialog(this);
@@ -155,22 +124,20 @@ public class AplikasiFileIO extends JFrame {
                     textArea.append(line + "\n");
                 }
                 
-                JOptionPane.showMessageDialog(this, 
-                    "File berhasil dibuka!", 
-                    "Sukses", 
-                    JOptionPane.INFORMATION_MESSAGE);
-                    
+                JOptionPane.showMessageDialog(this, "File berhasil dibuka!");
+                
             } catch (FileNotFoundException ex) {
                 JOptionPane.showMessageDialog(this, 
-                    "File tidak ditemukan: " + file.getName(), 
+                    "File tidak ditemukan: " + ex.getMessage(), 
                     "Error", 
                     JOptionPane.ERROR_MESSAGE);
             } catch (IOException ex) {
                 JOptionPane.showMessageDialog(this, 
-                    "Error saat membaca file: " + ex.getMessage(), 
+                    "Error membaca file: " + ex.getMessage(), 
                     "Error", 
                     JOptionPane.ERROR_MESSAGE);
             } finally {
+                // Cleanup - pastikan reader ditutup
                 if (reader != null) {
                     try {
                         reader.close();
@@ -182,7 +149,54 @@ public class AplikasiFileIO extends JFrame {
         }
     }
     
-    // Latihan 1: Simpan config dengan DataOutputStream
+    // ========== LATIHAN 1: SIMPAN TEXT dengan Try-with-Resources ==========
+    private void simpanText() {
+        JFileChooser fileChooser = new JFileChooser();
+        int result = fileChooser.showSaveDialog(this);
+        
+        if (result == JFileChooser.APPROVE_OPTION) {
+            File file = fileChooser.getSelectedFile();
+            
+            // Try-with-Resources - otomatis close()
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+                writer.write(textArea.getText());
+                JOptionPane.showMessageDialog(this, "File berhasil disimpan!");
+            } catch (IOException ex) {
+                JOptionPane.showMessageDialog(this, 
+                    "Error menyimpan file: " + ex.getMessage(), 
+                    "Error", 
+                    JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+    
+    // ========== LATIHAN 4: APPEND TEXT ==========
+    // Menggunakan FileWriter(File file, boolean append)
+    private void appendText() {
+        JFileChooser fileChooser = new JFileChooser();
+        int result = fileChooser.showSaveDialog(this);
+        
+        if (result == JFileChooser.APPROVE_OPTION) {
+            File file = fileChooser.getSelectedFile();
+            
+            // Parameter kedua = true untuk append mode
+            try (BufferedWriter writer = new BufferedWriter(
+                    new FileWriter(file, true))) {
+                
+                writer.write(textArea.getText());
+                JOptionPane.showMessageDialog(this, 
+                    "Text berhasil ditambahkan ke file (append)!");
+                    
+            } catch (IOException ex) {
+                JOptionPane.showMessageDialog(this, 
+                    "Error menambahkan text: " + ex.getMessage(), 
+                    "Error", 
+                    JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+    
+    // ========== LATIHAN 1: SIMPAN CONFIG dengan DataOutputStream ==========
     private void simpanConfig() {
         try (DataOutputStream dos = new DataOutputStream(
                 new FileOutputStream("config.bin"))) {
@@ -191,9 +205,7 @@ public class AplikasiFileIO extends JFrame {
             dos.writeInt(fontSize);
             
             JOptionPane.showMessageDialog(this, 
-                "Config disimpan!\nFont Size: " + fontSize, 
-                "Sukses", 
-                JOptionPane.INFORMATION_MESSAGE);
+                "Config berhasil disimpan!\nFont Size: " + fontSize);
                 
         } catch (IOException ex) {
             JOptionPane.showMessageDialog(this, 
@@ -203,7 +215,7 @@ public class AplikasiFileIO extends JFrame {
         }
     }
     
-    // Latihan 1: Muat config dengan DataInputStream
+    // ========== LATIHAN 1: MUAT CONFIG dengan DataInputStream ==========
     private void muatConfig() {
         try (DataInputStream dis = new DataInputStream(
                 new FileInputStream("config.bin"))) {
@@ -213,9 +225,7 @@ public class AplikasiFileIO extends JFrame {
             textArea.setFont(new Font("Monospaced", Font.PLAIN, fontSize));
             
             JOptionPane.showMessageDialog(this, 
-                "Config dimuat!\nFont Size: " + fontSize, 
-                "Sukses", 
-                JOptionPane.INFORMATION_MESSAGE);
+                "Config berhasil dimuat!\nFont Size: " + fontSize);
                 
         } catch (FileNotFoundException ex) {
             JOptionPane.showMessageDialog(this, 
@@ -230,7 +240,7 @@ public class AplikasiFileIO extends JFrame {
         }
     }
     
-    // Latihan 3: Simpan objek UserConfig dengan ObjectOutputStream
+    // ========== LATIHAN 3: SIMPAN OBJEK dengan ObjectOutputStream ==========
     private void simpanObjek() {
         String username = txtUsername.getText().trim();
         if (username.isEmpty()) {
@@ -262,15 +272,15 @@ public class AplikasiFileIO extends JFrame {
         }
     }
     
-    // Latihan 3: Muat objek UserConfig dengan ObjectInputStream
+    // ========== LATIHAN 3: MUAT OBJEK dengan ObjectInputStream ==========
     private void muatObjek() {
         try (ObjectInputStream ois = new ObjectInputStream(
                 new FileInputStream("userconfig.dat"))) {
             
-            // Casting objek yang dibaca
+            // Baca objek dan lakukan CASTING
             UserConfig config = (UserConfig) ois.readObject();
             
-            // Set nilai ke komponen UI
+            // Set nilai ke UI
             txtUsername.setText(config.getUsername());
             spinnerFontSize.setValue(config.getFontSize());
             textArea.setFont(new Font("Monospaced", Font.PLAIN, config.getFontSize()));
@@ -293,42 +303,25 @@ public class AplikasiFileIO extends JFrame {
         }
     }
     
-    // Latihan 2: Auto load last_notes.txt saat aplikasi dibuka
+    // ========== LATIHAN 2: AUTO LOAD last_notes.txt ==========
+    // Dipanggil di Constructor, gunakan try-catch agar tidak error jika file tidak ada
     private void autoLoadLastNotes() {
         File file = new File("last_notes.txt");
         
         if (file.exists()) {
             try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
                 textArea.setText("");
+                
                 String line;
                 while ((line = reader.readLine()) != null) {
                     textArea.append(line + "\n");
                 }
-                System.out.println("last_notes.txt berhasil dimuat otomatis");
+                
+                System.out.println("last_notes.txt berhasil dimuat otomatis.");
+                
             } catch (IOException ex) {
-                // Diam saja jika error
-                System.err.println("Tidak dapat memuat last_notes.txt");
-            }
-        }
-    }
-    
-    // Auto load userconfig.dat saat aplikasi dibuka
-    private void autoLoadUserConfig() {
-        File file = new File("userconfig.dat");
-        
-        if (file.exists()) {
-            try (ObjectInputStream ois = new ObjectInputStream(
-                    new FileInputStream(file))) {
-                
-                UserConfig config = (UserConfig) ois.readObject();
-                txtUsername.setText(config.getUsername());
-                spinnerFontSize.setValue(config.getFontSize());
-                textArea.setFont(new Font("Monospaced", Font.PLAIN, config.getFontSize()));
-                
-                System.out.println("UserConfig berhasil dimuat otomatis: " + config);
-            } catch (IOException | ClassNotFoundException ex) {
-                // Diam saja jika error
-                System.err.println("Tidak dapat memuat userconfig.dat");
+                // Diam saja jika error (tidak menampilkan pesan)
+                System.err.println("Gagal memuat last_notes.txt");
             }
         }
     }
