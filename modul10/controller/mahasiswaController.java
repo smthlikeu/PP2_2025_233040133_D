@@ -1,6 +1,5 @@
 package id.ac.unpas.pp2.modul10.controller;
 
-// IMPORT PENTING
 import id.ac.unpas.pp2.modul10.model.Mahasiswa;
 import id.ac.unpas.pp2.modul10.model.mahasiswaModel;
 import id.ac.unpas.pp2.modul10.view.mahasiswaView;
@@ -22,10 +21,12 @@ public class mahasiswaController {
         this.view.addEditListener(e -> editData());
         this.view.addHapusListener(e -> hapusData());
         this.view.addClearListener(e -> view.clearForm());
+        this.view.addCariListener(e -> cariData());
         
         this.view.addTableMouseListener(new MouseAdapter() {
             @Override
-            public void mouseClicked(MouseEvent e) {
+            // PERBAIKAN: Hapus "be" yang tidak sengaja terketik
+            public void mouseClicked(MouseEvent e) { 
                 int row = view.getTable().getSelectedRow();
                 if (row >= 0) {
                     view.setNama(view.getTableModel().getValueAt(row, 1).toString());
@@ -46,6 +47,29 @@ public class mahasiswaController {
             view.getTableModel().addRow(new Object[]{
                 no++, m.getNama(), m.getNim(), m.getJurusan()
             });
+        }
+    }
+    
+    private void cariData() {
+        // Karena view.getCari() sekarang sudah return String, .trim() akan berhasil
+        String keyword = view.getCari().trim(); 
+        
+        if (keyword.isEmpty()) {
+            loadData();
+            return;
+        }
+        
+        view.getTableModel().setRowCount(0);
+        List<Mahasiswa> list = model.cariMahasiswaByNama(keyword);
+        int no = 1;
+        for (Mahasiswa m : list) {
+            view.getTableModel().addRow(new Object[]{
+                no++, m.getNama(), m.getNim(), m.getJurusan()
+            });
+        }
+        
+        if (view.getTableModel().getRowCount() == 0) {
+            JOptionPane.showMessageDialog(view, "Data tidak ditemukan!");
         }
     }
 

@@ -25,6 +25,27 @@ public class mahasiswaModel {
         }
         return list;
     }
+    
+    public List<Mahasiswa> cariMahasiswaByNama(String keyword) {
+        List<Mahasiswa> list = new ArrayList<>();
+        try {
+            Connection conn = KoneksiDB.configDB();
+            String sql = "SELECT * FROM mahasiswa WHERE nama LIKE ?";
+            PreparedStatement pst = conn.prepareStatement(sql);
+            pst.setString(1, "%" + keyword + "%");
+            ResultSet res = pst.executeQuery();
+            while (res.next()) {
+                list.add(new Mahasiswa(
+                    res.getString("nama"),
+                    res.getString("nim"),
+                    res.getString("jurusan")
+                ));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
 
     public void insertMahasiswa(String nama, String nim, String jurusan) throws SQLException {
         Connection conn = KoneksiDB.configDB();
